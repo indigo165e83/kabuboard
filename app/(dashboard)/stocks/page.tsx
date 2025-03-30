@@ -16,11 +16,17 @@ type Stock = {
   scaleName: string
 }
 
+const validMarkets = [
+  'プライム（内国株式）',
+  'スタンダード（内国株式）',
+  'グロース（内国株式）',
+]
+
 export default async function StockPage() {
   const filePath = path.join(process.cwd(), 'public/tse-stocks/202502.csv')
   const fileContent = await fs.readFile(filePath, 'utf-8')
 
-  const records: Stock[] = parse(fileContent, {
+  const parsed: Stock[] = parse(fileContent, {
     columns: (header: string[]) =>
       header.map((col) => {
         switch (col.trim()) {
@@ -40,6 +46,10 @@ export default async function StockPage() {
     skip_empty_lines: true,
   })
 
+  const filtered = parsed.filter(stock =>
+    validMarkets.includes(stock.market)
+  )
+
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">東証銘柄一覧（2025年2月）</h1>
@@ -51,17 +61,15 @@ export default async function StockPage() {
               <th className="border px-2 py-1">銘柄名</th>
               <th className="border px-2 py-1">市場</th>
               <th className="border px-2 py-1">業種</th>
-              <th className="border px-2 py-1">規模</th>
             </tr>
           </thead>
           <tbody>
-            {records.map((stock, i) => (
+            {filtered.map((stock, i) => (
               <tr key={i} className="hover:bg-gray-50">
                 <td className="border px-2 py-1">{stock.code}</td>
                 <td className="border px-2 py-1">{stock.name}</td>
                 <td className="border px-2 py-1">{stock['market']}</td>
                 <td className="border px-2 py-1">{stock['industryName33'] || '-'}</td>
-                <td className="border px-2 py-1">{stock['scaleName'] || '-'}</td>
               </tr>
             ))}
           </tbody>
