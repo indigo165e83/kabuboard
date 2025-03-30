@@ -70,6 +70,10 @@ function DesktopNav() {
           <span className="sr-only">Acme Inc</span>
         </Link>
 
+        <NavItem href="/stocks" label="stocks">
+          <Home className="h-5 w-5" />
+        </NavItem>
+
         <NavItem href="#" label="Dashboard">
           <Home className="h-5 w-5" />
         </NavItem>
